@@ -16,73 +16,82 @@ function LoginUser() {
 
   let localToken = localStorage.getItem('token');
 
-  console.log(localToken)
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    // console.log(email, password);
-    const body = {
-      email,
-      password
+  // console.log(localToken)
+async function getUser(email,password){
+  const response = await fetch(`http://localhost:8080/api/user`)
+  .catch((err)=>{
+    console.log(err)
+  });
+  const users =await response.json().then(res=>{
+    let user=res.filter(e=>e.email==email)
+    if(user){
+      if(user[0].password==password)
+        return true
     }
-    // console.log(body);
-    try {
-         setLoading(true)
-      let data = await fetch('http://localhost:8080/loginUser',{
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      })
-      let response = await data.json();
-        setLoading(false)
-      console.log(token);
-       console.log(response)
-      if(response.error) {
-        return alert(response.error)
+    else return false
+    
+    
+})
+
+}
+  const handleLogin =  (e) => {
+      e.preventDefault();
+
+    if(getUser(email,password)){
+      alert('login successful')
+      navigate('/main')
     }
-      let token = response.token;
-      console.log(token)
-      
-      if(localToken){
-          if(localToken === token){
-              return alert("you are already logged in")
-          }else {  
-          return alert("You need to logout first !")
-          }
-      }
-
-      alert('login success');
-      //  window.location.reload()
-     
-      localStorage.setItem('token', token);
-      // setUser(token);
-
-      
-      window.location.reload()
-      
-
-    } catch (error) {
-        setError(true)
-      console.log(error);
-    }
+    else alert('check login details')
+  
   }
+
+
+    //   console.log(token);
+    //    console.log(response)
+    //   if(response.error) {
+    //     return alert(response.error)
+    // }
+    //   let token = response.token;
+    //   console.log(token)
+      
+    //   if(localToken){
+    //       if(localToken === token){
+    //           return alert("you are already logged in")
+    //       }else {  
+    //       return alert("You need to logout first !")
+    //       }
+    //   }
+
+    //   alert('login success');
+    //   //  window.location.reload()
+     
+    //   localStorage.setItem('token', token);
+    //   // setUser(token);
+
+      
+    //   window.location.reload()
+      
+
+    // } catch (error) {
+    //     setError(true)
+    //   console.log(error);
+    // }
+  // }
 
 
 
   
 
-if(error){
-    return(
-                <h1 
-              textAlign = "center" 
-              marginTop = "200px"
-              color = "red"
-          >Something Went Wrong...</h1>
+// if(error){
+//     return(
+//                 <h1 
+//               textAlign = "center" 
+//               marginTop = "200px"
+//               color = "red"
+//           >Something Went Wrong...</h1>
          
-    )
-}
+//     )
+// }
 
   return (
     <div className='login'>

@@ -1,65 +1,118 @@
 import React, { useEffect, useState } from 'react'
-import Questions from './Questions'
 
-import { MoveNextQuestion, MovePrevQuestion } from '../hooks/FetchQuestion';
-import { PushAnswer } from '../hooks/setResult';
-
-/** redux store import */
-import { useSelector, useDispatch } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 
 export default function Quiz() {
 
-    const [check, setChecked] = useState(undefined)
+    const [options,setOptions]=useState([])
+    const [submitAns,setSubmitAns]=useState(4)
+    const [question,setQuestion]=useState(async function(){
+        let response=await fetch(`http://localhost:8080/api/questions`)
+        .catch((err)=>{
+          console.log(err)
+        });
+        let questions =await response.json().then(res=>{
+            let questionList=res.filter(e=>e.difficulty == 5);
+            let que=questionList[Math.floor(Math.random()*questionList.length)]
+            return que
+        })
 
-    const result = useSelector(state => state.result.result);
-    const { queue, trace } = useSelector(state => state.questions);
-    const dispatch = useDispatch()
+        
+    }())
+    const [score,setScore]=useState(0)
+    const [correct,setCorrect]=useState(0)
+    const [wrong,setWrong]=useState(0)
+    const [count,setCount]=useState(0)
+    const [difficultyLevel,setdifficultyLevel]=useState(1)
+    const [answer,setAnswer]= useState(question?question.answers:[])
+    async function getQuestions(level){
+        const response=await fetch(`http://localhost:8080/api/questions`)
+        .catch((err)=>{
+          console.log(err)
+        });
+        const questions =await response.json().then(res=>{
+            let questionList=res.filter(e=>e.difficulty == level);
+            let que=questionList[Math.floor(Math.random()*questionList.length)]
+            setQuestion(que)
+            setOptions(que.options)
+            setAnswer(que.answers)
+            // console.log(level,que)
+        })
 
-    /** next button event handler */
-    function onNext(){
-        if(trace < queue.length){
-            /** increase the trace value by one using MoveNextAction */
-            dispatch(MoveNextQuestion());
+      }
 
-            /** insert a new result in the array.  */
-            if(result.length <= trace){
-                dispatch(PushAnswer(check))
-            }
+   
+
+      async function nextQuestion(level){
+        const check=checkAns(submitAns)
+        
+        level=level+check;
+        if(check==1){
+            setCorrect((p)=>p+1)
+            setScore((p)=>p+5)
         }
-     
-        /** reset the value of the checked variable */
-        setChecked(undefined)
-    }
-
-    /** Prev button event handler */
-    function onPrev(){
-        if(trace > 0){
-            /** decrease the trace value by one using MovePrevQuestion */
-            dispatch(MovePrevQuestion());
+        if(check ==-1){
+            setWrong((p)=>p+1)
+            setScore((p)=>p-2)
         }
-    }
 
-    function onChecked(check){
-        setChecked(check)
-    }
+        setdifficultyLevel(level)
+        getQuestions(level)
+        setCount((p)=>p+1)
+        setSubmitAns(4)
 
-    /** finished exam after the last question */
-    if(result.length && result.length >= queue.length){
+      }
+
+      const handleChange=(e)=>{
+        console.log(e)
+        setSubmitAns(e)
+      }
+
+      const checkAns=(val)=>{
+        if(val!=4){
+            if(answer[0]==val)
+                return 1
+            else return -1
+        }
+        else return 0
+      }
+
+      
+      if(count>=10 || difficultyLevel<=0 ){
+        saveResult(correct,wrong,score)
         return <Navigate to={'/result'} replace={true}></Navigate>
-    }
+        }
 
-  return (
-    <div className='container'>
-        <h1 className='title text-light'>Quiz Application</h1>
+        async function saveResult(body){
+            
+        }
 
-        {/* display questions */}
-        <Questions onChecked={onChecked} />
 
-        <div className='grid'>
-            { trace > 0 ? <button className='btn prev' onClick={onPrev}>Prev</button> : <div></div>}
-            <button className='btn next' onClick={onNext}>Next</button>
-        </div>
-    </div>
-  )
+// console.log("question",options)
+
+
+    return (
+        
+        <>
+        <p>click on next for the next question</p>
+            <div style={{display:'flex', gap:'20px'}}>
+                <p>Difficulty Level - {difficultyLevel}</p>
+   
+                <p>Score - {score}</p>
+            </div>
+            <h2>{count} - {question.statement}</h2>
+            
+            <ol style={{width:'30%'}}>
+                <li><input type="radio"value={false} name="options" onChange={()=>handleChange('0')} style={{width:'5%'}}/><label>{options[0]}</label></li>
+                <li><input type="radio"value={false} name="options" onChange={()=>handleChange('1')} style={{width:'5%'}}/><label>{options[1]}</label></li>
+                <li><input type="radio"value={false} name="options" onChange={()=>handleChange('2')} style={{width:'5%'}}/><label>{options[2]}</label></li>
+                <li><input type="radio"value={false} name="options" onChange={()=>handleChange('3')} style={{width:'5%'}}/><label>{options[3]}</label></li>
+                <li><input type="radio"value={false} name="options" onChange={()=>handleChange('4')} style={{width:'5%'}}/><label>{options[4]}</label></li>
+            </ol>
+        <button onClick={()=>nextQuestion(difficultyLevel)}>Next</button>
+
+            
+
+        </>
+    )
 }

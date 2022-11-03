@@ -1,80 +1,39 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../styles/Result.css';
 import { Link } from 'react-router-dom';
-
-import ResultTable from './ResultTable';
-import { useDispatch, useSelector } from 'react-redux';
-import { attempts_Number, earnPoints_Number, flagResult } from '../helper/helper';
-
-/** import actions  */
-import { resetAllAction } from '../redux/question_reducer';
-import { resetResultAction } from '../redux/result_reducer';
-import { usePublishResult } from '../hooks/setResult';
 
 
 export default function Result() {
 
-    const dispatch = useDispatch()
-    const { questions : { queue ,answers}, result : { result, userId}}  = useSelector(state => state)
-
-    const totalPoints = queue.length * 5; 
-    const attempts = attempts_Number(result);
-    const earnPoints = earnPoints_Number(result, answers, 5)
-    const flag = flagResult(totalPoints, earnPoints)
+    const [result,setResult] = useState([])
 
 
-    /** store user result */
-    usePublishResult({ 
-        result, 
-        username : userId,
-        attempts,
-        points: earnPoints,
-        achived : flag ? "Passed" : "Failed" });
+    async function getResult(){
+        const response=await fetch(`http://localhost:8080/api/result`)
+        .catch((err)=>{
+          console.log(err)
+        });
+        const result =await response.json().then(res=>{
+            let r=res.filter(e=>e.username=='abc')
+            setResult(r)
+            
+        })
 
-    function onRestart(){
-        dispatch(resetAllAction())
-        dispatch(resetResultAction())
-    }
+      }
+      useEffect(()=>{
+              getResult()
 
-  return (
-    <div className='container'>
-        <h1 className='title text-light'>Quiz Application</h1>
+      },[])
+      
 
-        <div className='result flex-center'>
-            <div className='flex'>
-                <span>Username</span>
-                <span className='bold'>{userId || ""}</span>
-            </div>
-            <div className='flex'>
-                <span>Total Quiz Points : </span>
-                <span className='bold'>{totalPoints || 0}</span>
-            </div>
-            <div className='flex'>
-                <span>Total Questions : </span>
-                <span className='bold'>{ queue.length || 0}</span>
-            </div>
-            <div className='flex'>
-                <span>Total Attempts : </span>
-                <span className='bold'>{attempts || 0}</span>
-            </div>
-            <div className='flex'>
-                <span>Total Earn Points : </span>
-                <span className='bold'>{earnPoints || 0}</span>
-            </div>
-            <div className='flex'>
-                <span>Quiz Result</span>
-                <span style={{ color : `${flag ? "#2aff95" : "#ff2a66" }` }} className='bold'>{flag ? "Passed" : "Failed"}</span>
-            </div>
+
+     return(
+        <div>
+            <p>name - {result[0].username}</p>
+            <p>correct answers - {result[0].correct}</p>
+            <p>wrong answers - {result[0].wrong}</p>
+            <p>score - {result[0].score}</p>
+            <Link to={'/'}>go to home</Link>
         </div>
-
-        <div className="start">
-            <Link className='btn' to={'/'} onClick={onRestart}>Restart</Link>
-        </div>
-
-        <div className="container">
-            {/* result table */}
-            <ResultTable></ResultTable>
-        </div>
-    </div>
-  )
+     )
 }

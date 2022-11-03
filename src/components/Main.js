@@ -25,8 +25,9 @@ export default function Main() {
             <li>You will be asked 10 questions one after another.</li>
             <li>5 points is awarded for the correct answer.</li>
             <li>2 marks will be deducted for wrong answer.</li>
-            <li>Each question has four options.</li>
-            <li>You can review and change answers before the quiz finish.</li>
+            <li>Each question has five options (fifth option is 'save and next')</li>
+            <li>If you are not sure to select first four options then you should select the five option.</li>
+            <li>If you are not able to solve the level 1 answer then the quix will end.</li>
             <li>The result will be declared at the end of the quiz.</li>
         </ol>
 

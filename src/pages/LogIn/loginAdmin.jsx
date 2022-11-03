@@ -16,79 +16,104 @@ function LoginAdmin() {
 
   let localToken = localStorage.getItem('token');
 
-  console.log(localToken)
-
+  // console.log(localToken)
+  async function getAdmin(email,password){
+    const response = await fetch(`http://localhost:8080/api/admin`)
+    .catch((err)=>{
+      console.log(err)
+    })
+    const admins =await response.json().then(res=>{
+      let admin=res.filter(e=>e.email==email)
+      console.log(password)
+      if(admin){
+        if(admin[0].password==password)
+          return true
+      }
+      return false
+      
+  })
+  
+  }
+  
   const handleLogin = async (e) => {
     e.preventDefault();
-    // console.log(email, password);
-    const body = {
-      email,
-      password
+
+    if(getAdmin(email,password)){
+      alert('login successful')
+      navigate('/createQuix')
     }
-    // console.log(body);
-    try {
-         setLoading(true)
-      let data = await fetch('http://localhost:8080/loginAdmin',{
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      })
-      let response = await data.json();
-        setLoading(false)
-      // console.log(token);
-       console.log(response)
-      if(response.error) {
-        return alert(response.error)
-    }
-      let token = response.token;
-      console.log(token)
-      
-      if(localToken){
-          if(localToken === token){
-              return alert("you are already logged in")
-          }else {  
-          return alert("You need to logout first !")
-          }
-      }
-
-      alert('login success');
-      //  window.location.reload()
-     
-      localStorage.setItem('token', token);
-      // setUser(token);
-
-      //  if(proceed){
-      //     console.log(proceed);
-      // // navigate("/goal/payment")
-      // }else {  
-      //   navigate('/');
-      // }
-
-      window.location.reload()
-      
-
-    } catch (error) {
-        setError(true)
-      console.log(error);
-    }
+    else alert('check login details')
+  
   }
+
+//     const body = {
+//       email,
+//       password
+//     }
+//     // console.log(body);
+//     try {
+//          setLoading(true)
+//       let data = await fetch('http://localhost:8080/loginAdmin',{
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(body)
+//       })
+//       let response = await data.json();
+//         setLoading(false)
+//       // console.log(token);
+//        console.log(response)
+//       if(response.error) {
+//         return alert(response.error)
+//     }
+//       let token = response.token;
+//       console.log(token)
+      
+//       if(localToken){
+//           if(localToken === token){
+//               return alert("you are already logged in")
+//           }else {  
+//           return alert("You need to logout first !")
+//           }
+//       }
+
+//       alert('login success');
+//       //  window.location.reload()
+     
+//       localStorage.setItem('token', token);
+//       // setUser(token);
+
+//       //  if(proceed){
+//       //     console.log(proceed);
+//       // // navigate("/goal/payment")
+//       // }else {  
+//       //   navigate('/');
+//       // }
+
+//       window.location.reload()
+      
+
+//     } catch (error) {
+//         setError(true)
+//       console.log(error);
+//     }
+//   }
 
 
 
   
 
-if(error){
-    return(
-                <h1 
-              textAlign = "center" 
-              marginTop = "200px"
-              color = "red"
-          >Something Went Wrong...</h1>
+// if(error){
+//     return(
+//                 <h1 
+//               textAlign = "center" 
+//               marginTop = "200px"
+//               color = "red"
+//           >Something Went Wrong...</h1>
          
-    )
-}
+//     )
+// }
 
   return (
     <div className='login'>

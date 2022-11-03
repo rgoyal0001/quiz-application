@@ -16,14 +16,14 @@ export const useFetchQestion = () => {
         /** async function fetch backend data */
         (async () => {
             try {
-                const [{ questions, answers }] = await getServerData(`http://localhost:8080/api/questions`, (data) => data)
-                
+                const questions = await getServerData(`http://localhost:8080/api/questions`, (data) => data)
+                console.log(questions)
                 if(questions.length > 0){
                     setGetData(prev => ({...prev, isLoading : false}));
                     setGetData(prev => ({...prev, apiData : questions}));
 
                     /** dispatch an action */
-                    dispatch(Action.startExamAction({ question : questions, answers }))
+                    dispatch(Action.startExamAction({ question : questions}))
 
                 } else{
                     throw new Error("No Question Avalibale");
@@ -48,11 +48,3 @@ export const MoveNextQuestion = () => async (dispatch) => {
     }
 }
 
-/** PrevAction Dispatch function */
-export const MovePrevQuestion = () => async (dispatch) => {
-    try {
-        dispatch(Action.movePrevAction()); /** decrease trace by 1 */
-    } catch (error) {
-        console.log(error)
-    }
-}

@@ -11,7 +11,7 @@ async function register(body) {
   });
   // console.log('user',user)
   const response = await fetch(
-    `http://localhost:8080/registerUser`, {
+    `http://localhost:8080/api/user`, {
       method: 'POST',
       headers: {
         'Content-Type': "application/json"
@@ -50,7 +50,7 @@ function Register() {
            return alert(res.error)
        }
       alert("Registration successful")
-      navigate('/login')
+      navigate('/loginUser')
     })
     .catch(err=>{
         setError(true)
