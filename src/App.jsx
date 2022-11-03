@@ -11,6 +11,7 @@ import Main from './components/Main'
 import CreateQuiz from './components/CreateQuiz'
 import Quiz from './components/Quiz'
 import Result from './components/Result'
+import {Home} from './components/Home'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path='/createQuiz' element={<CreateQuiz/>}></Route>
         <Route path='/quiz' element={<Quiz/>}></Route>
         <Route path='/result' element={<Result/>}></Route>
+        <Route path='/' element={<Home/>}></Route>
       </Routes>
     </div>
   );

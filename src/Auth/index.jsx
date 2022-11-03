@@ -16,7 +16,7 @@ async function getLoggedInUser() {
 
     if (token) {
         const response = await fetch(
-          `https://unacadmey-test-app.herokuapp.com/getLoggedIn`, {
+          `http://localhost:8080/api/getLoggedIn`, {
             headers: {
               'Content-Type': "application/json",
               'token': token

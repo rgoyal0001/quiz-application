@@ -4,27 +4,35 @@ import { Navigate } from 'react-router-dom'
 
 export default function Quiz() {
 
-    const [options,setOptions]=useState([])
+    
     const [submitAns,setSubmitAns]=useState(4)
-    const [question,setQuestion]=useState(async function(){
-        let response=await fetch(`http://localhost:8080/api/questions`)
-        .catch((err)=>{
-          console.log(err)
-        });
-        let questions =await response.json().then(res=>{
-            let questionList=res.filter(e=>e.difficulty == 5);
-            let que=questionList[Math.floor(Math.random()*questionList.length)]
-            return que
-        })
-
-        
-    }())
+    const [question,setQuestion]=useState({
+        "_id": "6362a983f21d7c59373c9b27",
+        "statement": "Which function is used to serialize an object into a JSON string?",
+        "options": [
+            "stringify()",
+            "parse()",
+            "convert()",
+            "none of these",
+            "save and next"
+        ],
+        "optionType": "single",
+        "answers": [
+            0
+        ],
+        "difficulty": 5,
+        "__v": 0
+    })
+    // console.log(question.options)
+    const [options,setOptions]=useState(question.options)
     const [score,setScore]=useState(0)
     const [correct,setCorrect]=useState(0)
     const [wrong,setWrong]=useState(0)
-    const [count,setCount]=useState(0)
-    const [difficultyLevel,setdifficultyLevel]=useState(1)
+    const [count,setCount]=useState(1)
+    const [difficultyLevel,setdifficultyLevel]=useState(5)
     const [answer,setAnswer]= useState(question?question.answers:[])
+
+
     async function getQuestions(level){
         const response=await fetch(`http://localhost:8080/api/questions`)
         .catch((err)=>{
@@ -34,6 +42,7 @@ export default function Quiz() {
             let questionList=res.filter(e=>e.difficulty == level);
             let que=questionList[Math.floor(Math.random()*questionList.length)]
             setQuestion(que)
+            // console.log('questionList',questionList)
             setOptions(que.options)
             setAnswer(que.answers)
             // console.log(level,que)
@@ -64,7 +73,7 @@ export default function Quiz() {
       }
 
       const handleChange=(e)=>{
-        console.log(e)
+        // console.log(e)
         setSubmitAns(e)
       }
 
@@ -79,12 +88,34 @@ export default function Quiz() {
 
       
       if(count>=10 || difficultyLevel<=0 ){
-        saveResult(correct,wrong,score)
+        
+        saveResult({correct,wrong,score})
+        .then((res)=>{
+            alert('you can see your result now')
+        })
         return <Navigate to={'/result'} replace={true}></Navigate>
         }
 
         async function saveResult(body){
-            
+            body = JSON.stringify({
+                question: body
+            });
+            // console.log('user',user)
+            const response = await fetch(
+              `http://localhost:8080/api/result`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': "application/json"
+                },
+                body,
+              }
+            )
+          
+            const data = await response.json();
+            // console.log('body',body)
+          
+            return data;
+          
         }
 
 

@@ -40,7 +40,7 @@ function LoginAdmin() {
 
     if(getAdmin(email,password)){
       alert('login successful')
-      navigate('/createQuix')
+      navigate('/createQuiz')
     }
     else alert('check login details')
   

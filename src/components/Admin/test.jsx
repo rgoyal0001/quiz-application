@@ -9,7 +9,7 @@ async function submitTest(body) {
     user: body
   });
   const response = await fetch(
-    `https://unacadmey-test-app.herokuapp.com/admin/test`, {
+    `http://localhost:8080/api/test`, {
       method: 'POST',
       headers: {
         'Content-Type': "application/json"
