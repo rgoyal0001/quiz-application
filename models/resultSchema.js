@@ -4,7 +4,6 @@ const { Schema } = mongoose;
 
 /** result model */
 const resultModel = new Schema({
-    username : { type : String },
     correct : { type : Number, default : 0},
     wrong : { type : Number, default : 0},
     score : { type : Number, default : 0},

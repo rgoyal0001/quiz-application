@@ -20,7 +20,6 @@ export async function insertQuestions(req, res){
     let existingQuestion=await Questions.findOne({statement:question.statement})
     try {
         
-        //  if(!question.statement || question.options.length!=4 || !question.difficulty || question.optionType || !question.answers) throw new Error('Data Not Provided...!');
         if(existingQuestion){
             throw new Error('Question already exist...!');
         }
@@ -57,10 +56,9 @@ export async function getResult(req, res){
 /** post all result */
 export async function storeResult(req, res){
    try {
-        const { username, correct, wrong, score } = req.body;
-        if(!username && !score) throw new Error('Data Not Provided...!');
+        const {  correct, wrong, score } = req.body;
 
-        Results.create({ username, correct, wrong, score }, function(err, data){
+        Results.create({  correct, wrong, score }, function(err, data){
             res.json({ msg : "Result Saved Successfully...!"})
         })
 
